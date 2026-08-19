@@ -39,15 +39,31 @@
 
 ## 3. State / progress
 
+- (2026-08-19) v1 basics COMPLETE and verified: full Playwright e2e against
+  local Postgres 16 passed (OTP login → create group → add members → open
+  cycle → member token link → claim w/ reference → wa.me proof deep link →
+  collector confirm w/ note → member sees confirmed timeline → manifest/sw/
+  icons 200). `tsc --noEmit` and `next build` green. Migration
+  `drizzle/0000_*.sql` applies cleanly.
+- Additional decisions made during build:
+  - D10: Collector is a group_member but NOT a pot_member in v1 — he never
+    owes himself; addMember auto-joins the single pot.
+  - D11: Cycle form takes "amount per member" (not total/N).
+  - D12: Tailwind v4 — custom classes can't be `@apply`'d; variants share a
+    grouped base rule in globals.css instead.
+  - D13: After a server action redirect, Next does client-side RSC nav;
+    initial flight-payload scripts in the DOM go stale (matters for tests
+    scraping page HTML — reload first).
 - (init) Repo was empty. PLAN.md, MEMORY.md, COMPLIANCE.md created first,
   before any code, per owner instruction.
 
 ## 4. Gotchas / open items
 
-- No Postgres in the dev container: verification is `tsc --noEmit` +
-  `next build`; runtime DB paths are untested until a real DATABASE_URL demo.
-- Drizzle migrations generated with drizzle-kit; apply with
-  `npm run db:push` (or `db:migrate`) against the real DB before first use.
+- Deploy needs: Vercel env `DATABASE_URL` + `AUTH_SECRET` (+`DEV_OTP_ECHO=1`
+  for demo), then `npm run db:migrate` once against the real DB.
+- Next up (per brief §11, post-basics): multi-pot UI for trips, custom/
+  per-unit splits UI, PDF/image export, pricing gate flag, recurring cycle
+  auto-open, consent-capture UX, token rotation UI, rate limiting.
 - Hosting region is an OPEN QUESTION in the brief (PDPC cross-border) —
   Vercel is a demo host per owner instruction; see COMPLIANCE.md.
 - PWA icons: simple generated PNGs (no design pass yet).

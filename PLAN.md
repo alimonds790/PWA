@@ -61,20 +61,24 @@ Pot is in the schema from day one; the UI hides pots when a group has one.
 
 Legend: [x] done · [~] partial · [ ] not started
 
-1. [ ] Repo scaffold: Next.js + TS + Tailwind + Drizzle config, env template
-2. [ ] Schema + migrations (all tables incl. audit_log, consents)
-3. [ ] Collector auth: phone + OTP (console SMS provider), signed session
-4. [ ] Group creation w/ templates → auto default pot → add members (token gen)
-5. [ ] Token-link member view `/m/[token]`: balance + history (read-only)
-6. [ ] Payment claim submission (structured fields) + WhatsApp proof deep link
-7. [ ] Collector confirm/reject with note + audit log
-8. [ ] Cycle creation (one-off + monthly label); obligations generated per split
-9. [ ] Outstanding-balances view for whole group
-10. [ ] WhatsApp reminder deep links (collector side)
-11. [ ] PWA: manifest + service worker + icons + install
-12. [ ] Arabic-first RTL pass + EN toggle
-13. [ ] COMPLIANCE.md — regulations skipped now, needed before publishing
-14. [ ] README (deploy-to-Vercel instructions), typecheck + build green, push, draft PR
+1. [x] Repo scaffold: Next.js + TS + Tailwind + Drizzle config, env template
+2. [x] Schema + migrations (all tables incl. audit_log, consents)
+3. [x] Collector auth: phone + OTP (console SMS provider), signed session
+4. [x] Group creation w/ templates → auto default pot → add members (token gen)
+5. [x] Token-link member view `/m/[token]`: balance + history (read-only)
+6. [x] Payment claim submission (structured fields) + WhatsApp proof deep link
+7. [x] Collector confirm/reject with note + audit log
+8. [x] Cycle creation (one-off + monthly label); obligations generated per split
+9. [x] Outstanding-balances view for whole group
+10. [x] WhatsApp reminder deep links (collector side)
+11. [x] PWA: manifest + service worker + icons + install
+12. [x] Arabic-first RTL pass + EN toggle
+13. [x] COMPLIANCE.md — regulations skipped now, needed before publishing
+14. [x] README (deploy-to-Vercel instructions), typecheck + build green, push, draft PR
+
+All 14 steps verified by an end-to-end browser test against a local
+Postgres (login → group → members → cycle → claim → wa.me proof link →
+confirm → member timeline → PWA assets). See MEMORY.md §3.
 
 Deferred beyond this build (in brief, not in "basics"): multi-pot UI for
 trips (schema supports it), per-unit/custom splits UI (schema supports it),
