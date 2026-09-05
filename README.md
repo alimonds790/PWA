@@ -26,18 +26,31 @@ required before any public launch**).
 Next.js 15 (App Router, server actions) · TypeScript · Tailwind v4 (RTL-first,
 Arabic default + English toggle) · Drizzle ORM · Postgres · installable PWA.
 
-## Deploy to Vercel
+## Deploy to Vercel (no CLI needed, ~3 minutes)
 
-1. Create a Postgres database (Vercel Postgres / Neon — see COMPLIANCE.md §B2
-   about hosting region before any real launch).
-2. Import this repo in Vercel. Set env vars:
-   - `DATABASE_URL` — pooled Postgres connection string
-   - `AUTH_SECRET` — long random string (`openssl rand -base64 32`)
-   - `DEV_OTP_ECHO=1` — **demo only**: shows the OTP on the login screen
-     because no SMS provider is wired up yet. Remove for production.
-3. Apply the schema once: `DATABASE_URL=... npm run db:migrate`
-   (or `npm run db:push`).
-4. Deploy. Install the PWA from the browser menu ("Add to Home Screen").
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/import?s=https%3A%2F%2Fgithub.com%2Falimonds790%2FPWA)
+
+1. **Import the repo**: [vercel.com/new/import?s=https://github.com/alimonds790/PWA](https://vercel.com/new/import?s=https%3A%2F%2Fgithub.com%2Falimonds790%2FPWA)
+   (log in with the GitHub account that owns the repo). Framework is
+   auto-detected as Next.js — keep all defaults and Deploy. The first
+   deploy builds fine without a database.
+2. **Add a database**: project → **Storage** tab → **Create Database** →
+   **Neon (Postgres)** → accept defaults. This injects `DATABASE_URL`
+   into the project automatically.
+3. **Add two env vars**: project → **Settings → Environment Variables**:
+   - `AUTH_SECRET` — any long random string
+   - `DEV_OTP_ECHO` = `1` — **demo only**: shows the OTP on the login
+     screen because no SMS provider is wired up. Remove for production
+     (COMPLIANCE.md §B6).
+4. **Redeploy**: **Deployments** tab → ⋯ on the latest → **Redeploy**.
+   Migrations run automatically at boot (`src/instrumentation.ts`;
+   disable with `AUTO_MIGRATE=0`).
+5. Open the URL, log in with any Egyptian-format mobile (e.g.
+   `01012345678`), type the code shown on screen — you're the collector.
+   Install it from the browser menu ("Add to Home Screen").
+
+> ⚠️ Vercel + Neon host data outside Egypt — fine for a demo, a PDPC
+> licensing issue for a real launch. See COMPLIANCE.md §B2.
 
 ## Local dev
 
