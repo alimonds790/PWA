@@ -39,6 +39,28 @@
 
 ## 3. State / progress
 
+- (2026-09-05) v1.5 shipped, e2e-verified (fresh Playwright suite, local
+  Postgres 16): building regression + trip with second pot ("العربية",
+  collector هدى), custom override (250 vs 200 default), collector login by
+  phone → link_user → confirm from her own dashboard, token rotation kills
+  old link, print record complete, free-limit gate redirects with notice.
+- v1.5 decisions:
+  - D14: Group access = admin OR collector of ≥1 pot (`src/lib/authz.ts`);
+    collectors can open cycles + confirm only for their own pots; member
+    management stays admin-only.
+  - D15: Member↔user linking happens at login: any group_members row with
+    the verified phone and NULL user_id gets user_id set (audited,
+    action=link_user). This is the brief's "member later registers" path.
+  - D16: Export = print stylesheet + browser save-as-PDF. No server-side
+    file generation ever (invariant #1 adjacent; nothing to store).
+  - D17: Entitlement gate checks only at CREATE (never visibility), behind
+    BILLING_ENABLED env flag, default off.
+  - D18: Consent row (policy v1.0-demo, purposes payment_record+otp_login)
+    inserted for collectors at first login; member consent UX still open
+    (COMPLIANCE.md §B3).
+  - D19: New-pot form defaults all members checked; the chosen collector is
+    auto-excluded from pot_members (never owes self).
+
 - (2026-08-19) v1 basics COMPLETE and verified: full Playwright e2e against
   local Postgres 16 passed (OTP login → create group → add members → open
   cycle → member token link → claim w/ reference → wa.me proof deep link →

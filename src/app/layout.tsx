@@ -30,7 +30,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body className="min-h-screen">
-        <header className="bg-teal-800 text-white">
+        <header className="bg-teal-800 text-white print:hidden">
           <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
             <a href={session ? "/dashboard" : "/"} className="text-lg font-bold">
               {dict.appName}
@@ -52,7 +52,7 @@ export default async function RootLayout({
           </div>
         </header>
         <main className="mx-auto max-w-3xl px-4 py-6">{children}</main>
-        <footer className="mx-auto max-w-3xl px-4 pb-8 text-center text-xs text-stone-500">
+        <footer className="mx-auto max-w-3xl px-4 pb-8 text-center text-xs text-stone-500 print:hidden">
           {dict.recordNotArbiter}
         </footer>
         <SwRegister />

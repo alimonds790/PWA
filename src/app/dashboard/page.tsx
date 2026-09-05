@@ -1,23 +1,48 @@
-import { desc, eq, and, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { groups } from "@/db/schema";
+import { groups, groupMembers, pots } from "@/db/schema";
 import { getLocale, t } from "@/lib/i18n";
 import { getSession } from "@/lib/session";
 import { createGroup } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function Dashboard() {
+export default async function Dashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ limit?: string }>;
+}) {
   const session = await getSession();
   if (!session) redirect("/login");
   const dict = t(await getLocale());
+  const d = db();
+  const { limit } = await searchParams;
 
-  const myGroups = await db()
+  const adminGroups = await d
     .select()
     .from(groups)
     .where(and(eq(groups.adminUserId, session.uid), isNull(groups.archivedAt)))
     .orderBy(desc(groups.createdAt));
+
+  // Groups reached as a pot collector (trips: Sara collects the car pot in
+  // a group Ali admins). Linked at login via group_members.user_id.
+  const collectorRows = await d
+    .selectDistinct({ group: groups })
+    .from(pots)
+    .innerJoin(groupMembers, eq(pots.collectorMemberId, groupMembers.id))
+    .innerJoin(groups, eq(pots.groupId, groups.id))
+    .where(
+      and(
+        eq(groupMembers.userId, session.uid),
+        isNull(pots.archivedAt),
+        isNull(groups.archivedAt),
+      ),
+    );
+  const adminIds = new Set(adminGroups.map((g) => g.id));
+  const collectorGroups = collectorRows
+    .map((r) => r.group)
+    .filter((g) => !adminIds.has(g.id));
 
   const templates = ["building", "apartment", "family", "trip", "custom"] as const;
 
@@ -25,15 +50,28 @@ export default async function Dashboard() {
     <div className="space-y-6">
       <section>
         <h1 className="mb-3 text-xl font-bold">{dict.dashboard}</h1>
-        {myGroups.length === 0 ? (
+        {limit === "1" && (
+          <p className="card mb-3 border-amber-300 bg-amber-50 text-sm text-amber-800">
+            {dict.freeLimitReached}
+          </p>
+        )}
+        {adminGroups.length + collectorGroups.length === 0 ? (
           <p className="card text-sm text-stone-500">{dict.noGroups}</p>
         ) : (
           <ul className="space-y-2">
-            {myGroups.map((g) => (
+            {adminGroups.map((g) => (
               <li key={g.id}>
                 <a href={`/g/${g.id}`} className="card flex items-center justify-between hover:border-teal-600">
                   <span className="font-semibold">{g.name}</span>
                   <span className="text-sm text-stone-500">{dict[g.type]}</span>
+                </a>
+              </li>
+            ))}
+            {collectorGroups.map((g) => (
+              <li key={g.id}>
+                <a href={`/g/${g.id}`} className="card flex items-center justify-between hover:border-teal-600">
+                  <span className="font-semibold">{g.name}</span>
+                  <span className="badge bg-teal-100 text-teal-800">{dict.collector}</span>
                 </a>
               </li>
             ))}

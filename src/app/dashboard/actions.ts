@@ -1,12 +1,13 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, count, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { groups, groupMembers, pots, users } from "@/db/schema";
 import { getSession } from "@/lib/session";
 import { randomToken } from "@/lib/crypto";
 import { writeAudit } from "@/lib/audit";
+import { canCreateGroup } from "@/lib/entitlements";
 
 const GROUP_TYPES = ["building", "apartment", "family", "trip", "custom"] as const;
 type GroupTypeV = (typeof GROUP_TYPES)[number];
@@ -22,6 +23,13 @@ export async function createGroup(formData: FormData) {
     ? (rawType as GroupTypeV)
     : "custom";
   if (!name || !yourName) redirect("/dashboard");
+
+  // Entitlement gate (brief §10): gates creation only, never visibility.
+  const [{ n }] = await db()
+    .select({ n: count() })
+    .from(groups)
+    .where(and(eq(groups.adminUserId, session.uid), isNull(groups.archivedAt)));
+  if (!canCreateGroup(n)) redirect("/dashboard?limit=1");
 
   const groupId = await db().transaction(async (tx) => {
     await tx

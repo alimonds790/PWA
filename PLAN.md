@@ -80,10 +80,27 @@ All 14 steps verified by an end-to-end browser test against a local
 Postgres (login → group → members → cycle → claim → wa.me proof link →
 confirm → member timeline → PWA assets). See MEMORY.md §3.
 
-Deferred beyond this build (in brief, not in "basics"): multi-pot UI for
-trips (schema supports it), per-unit/custom splits UI (schema supports it),
-PDF/image export, pricing/entitlement gate, recurring cycle auto-generation
-(manual "open next month" button instead), member phone-recovery flow.
+### v1.5 (shipped 2026-09-05, all e2e-verified)
+
+15. [x] Multi-pot UI for trips: "add another pot" (collapsed until needed),
+    per-pot collector + member subset, per-pot sections on the group page,
+    pot badges on the member view
+16. [x] Second-collector access: member rows link to a user account by
+    verified phone at login; collectors see their groups on the dashboard
+    and can open cycles / confirm claims for their own pots only
+17. [x] Custom split overrides per member when opening a cycle
+18. [x] Monthly recurrence: next-period prefill on the cycle form
+19. [x] Export: printable full-record page per group (`/g/[id]/print`,
+    browser print → PDF; nothing generated or stored server-side) + member
+    print button
+20. [x] Member-link token rotation (revokes a lost/leaked link)
+21. [x] Versioned consent capture at first login (consent line on the form,
+    row in `consents`)
+22. [x] Entitlement gate behind `BILLING_ENABLED` flag (2 active groups on
+    free; gates creation only, never visibility)
+
+Still deferred: per-unit splits UI, auto-opening recurring cycles, member
+phone-recovery flow, billing itself, rate limiting, consent UX for members.
 
 ## 5. Key flows
 

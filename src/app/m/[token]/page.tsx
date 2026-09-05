@@ -13,6 +13,7 @@ import { getLocale, t, type Dict } from "@/lib/i18n";
 import { fmt, sum } from "@/lib/money";
 import { waLink } from "@/lib/wa";
 import { submitClaim } from "./actions";
+import { PrintButton } from "@/app/print-button";
 
 export const dynamic = "force-dynamic";
 
@@ -103,7 +104,15 @@ export default async function MemberPage({
             {fmt(sum(outstanding), locale)}
           </b>
         </p>
+        {obs.length > 0 && (
+          <div className="mt-3">
+            <PrintButton label={dict.printRecord} />
+          </div>
+        )}
       </div>
+      {obs.length === 0 && (
+        <p className="card text-center text-sm text-stone-500">{dict.noObligations}</p>
+      )}
 
       {obs.map(({ ob, cycle }) => {
         const pot = potById.get(cycle.potId);
@@ -120,6 +129,9 @@ export default async function MemberPage({
           <section key={ob.id} className="card">
             <div className="mb-2 flex items-center justify-between">
               <p className="font-semibold">
+                {groupPots.length > 1 && pot && (
+                  <span className="me-2 badge bg-teal-100 text-teal-800">{pot.name}</span>
+                )}
                 {cycle.periodLabel}
                 <span className="ms-2 text-sm font-normal text-stone-500">
                   {fmt(ob.amountDue, locale)}
@@ -172,14 +184,14 @@ export default async function MemberPage({
               <a
                 href={waLink(collector.phone, proofText!)}
                 target="_blank"
-                className="btn-whatsapp w-full"
+                className="btn-whatsapp w-full print:hidden"
               >
                 {dict.sendProof} ({collector.displayName})
               </a>
             )}
 
             {canClaim && (
-              <form action={submitClaim} className="space-y-3 border-t border-stone-200 pt-3">
+              <form action={submitClaim} className="space-y-3 border-t border-stone-200 pt-3 print:hidden">
                 <h3 className="font-semibold">{dict.iPaid}</h3>
                 <input type="hidden" name="token" value={token} />
                 <input type="hidden" name="obligationId" value={ob.id} />

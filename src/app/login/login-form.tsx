@@ -71,6 +71,7 @@ export function LoginForm({ dict }: { dict: Dict }) {
           <button className="btn-primary w-full" disabled={verifyPending}>
             {dict.verify}
           </button>
+          <p className="text-xs text-stone-400">{dict.consentLine}</p>
         </form>
       )}
     </div>
